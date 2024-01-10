@@ -1,0 +1,13 @@
+Library ieee;
+Use ieee.std_logic_1164.all;
+Use work.p5_pack.all;
+ENTITY p5 IS
+    Port(shift,load,pin,sin :IN std_logic;
+		     D:OUT std_logic);
+END p5;
+ 
+ARCHITECTURE  func OF Dinput IS 
+	
+BEGIN
+   
+END func;

@@ -1,0 +1,25 @@
+Library ieee;
+Use ieee.std_logic_1164.all;
+ENTITY ALU IS
+    port(sv:in std_logic;
+            x,y:in std_logic_vector(0 to 3);
+            s:out std_logic_vector(0 to 3);
+            cout:out std_logic);
+END ALU;
+ 
+ARCHITECTURE  func OF ALU IS 
+    signal c: std_logic_vector(0 to 3);
+    signal s1,s2,s3:std_logic;
+BEGIN
+   s(0)<= x(0) xor y(0) xor sv;
+    c(1) <= (x(0) and y(0)) or (sv and y(0)) or (sv and x(0));
+    s(1)<= x(1) xor y(1) xor c(1);
+    s1 <= x(1) xor y(1) xor c(1);
+    c(2) <= (x(1) and y(1)) or (c(1) and y(1)) or (c(1) and x(1));
+    s(2)<= x(2) xor y(2) xor c(2);
+    s2<= x(2) xor y(2) xor c(2);
+    c(3) <= (x(2) and y(2)) or (c(2) and y(2)) or (c(2) and x(2));
+    s(3)<= x(3) xor y(3) xor c(3);
+    s3<= x(3) xor y(3) xor c(3);
+    cout <= (x(3) and y(3)) or (c(3) and y(3)) or (c(3) and x(3)) or (s1 and s2) or (s2 and s3);
+END func;

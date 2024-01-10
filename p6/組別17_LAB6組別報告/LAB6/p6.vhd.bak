@@ -1,0 +1,46 @@
+Library ieee;
+Use ieee.std_logic_1164.all;
+ENTITY p6 IS
+    PORT(clk : in std_logic;
+    w: in std_logic;
+    r: in std_logic;
+    output:out STD_LOGIC_VECTOR(0 to 2));
+END p6;
+
+ARCHITECTURE  func OF p6 IS 
+    signal s: std_logic_vector(0 to 2);
+BEGIN 
+    Process
+    BEGIN
+        WAIT UNTIL clk'EVENT and clk = '1';
+        if r = '0' then
+            if s = "000" then
+                if w = '1' then 
+                    s <= "001";
+                else
+                    s <= "000";
+                end if;
+            end if;
+            if s = "001" then
+                if w = '1' then 
+                    s <= "011";
+                else
+                    s <= "010";
+                end if;
+            end if;
+            if s = "010" or s = "011" then
+                s <= "100";
+            end if;
+            if s = "100" then
+                if w = '1' then 
+                    s <= "101";
+                else
+                    s <= "001";
+                end if;
+            end if;
+        else
+            s <= "000";
+        end if;
+    END PROCESS;
+    output<=s;
+END func;

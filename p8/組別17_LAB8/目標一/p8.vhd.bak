@@ -1,0 +1,16 @@
+Library ieee;
+Use ieee.std_logic_1164.all;
+Use ieee.unsigned.all;
+ENTITY p8 IS
+    PORT(clk : in std_logic;
+    w: in std_logic;
+    r: in std_logic;
+    output:out STD_LOGIC_VECTOR(0 to 2));
+END p8;
+
+ARCHITECTURE  func OF p8 IS 
+    TYPE State_Type is (A,B,C,D,E,F);
+   signal s: State_Type;
+BEGIN 
+         
+END func;

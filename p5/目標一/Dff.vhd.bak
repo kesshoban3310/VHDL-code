@@ -1,0 +1,17 @@
+Library ieee;
+Use ieee.std_logic_1164.all;
+ENTITY Dff
+	Port(D,reset,clk:IN std_logic;
+			Q:OUT std_logic;)
+end Dff;
+ARCHITECTURE  func OF Dff IS 
+BEGIN
+   PROCESS(reset,clk)
+	BEGIN
+		if reset = '0' THEN
+			Q<='0';
+		ELSIF CLOCK'EVENT AND Clock = '1' THEN
+			Q<=D;
+		END IF;
+	END PROCESS;
+END func;

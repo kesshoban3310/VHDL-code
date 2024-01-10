@@ -1,0 +1,12 @@
+Library ieee;
+Use ieee.std_logic_1164.all;
+package p2_pack is 
+	component fulladd
+		port(cin,x,y:in std_logic;
+				cout,s:out std_logic);
+	end component fulladd;
+	component hex
+		port(z,y,x,w,w1,x1,y1,z1 : IN STD_LOGIC;
+            a,b,c,d,e,f,g,a1,b1,c1,d1,e1,f1,g1      : OUT STD_LOGIC);
+	end component fulladd;
+end package;

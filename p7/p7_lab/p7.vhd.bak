@@ -1,0 +1,22 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_arith.ALL;
+USE ieee.std_logic_signed.ALL;
+USE ieee.std_logic_unsigned.ALL;
+USE work.p7_package.ALL;
+
+ENTITY p7 IS
+    PORT (
+        clk,clear: IN std_logic;
+		  divisor,dividend: IN std_logic_vector(0 to 7);
+		  Re:OUT std_logic_vector(0 to 7);
+		  Q:OUT std_logic_vector(0 to 7);
+		  
+    );
+END p7;
+
+ARCHITECTURE func OF p7 IS
+		signal remain:std_logic_vector(0 to 15);
+BEGIN
+    -- implement here
+END func;

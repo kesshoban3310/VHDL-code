@@ -1,0 +1,32 @@
+Library ieee;
+Use ieee.std_logic_1164.all;
+Use work.p4_pack.all;
+ENTITY p4 IS
+    port(x1,y1:in std_logic_vector(0 to 3);
+			x2,y2:in std_logic_vector(0 to 3);
+			h: out std_logic_vector(0 to 6);
+			h2: out std_logic_vector(0 to 6);
+			overflow: out std_logic);
+END p4;
+ARCHITECTURE  func OF p3 IS 
+	signal s,rs: std_logic_vector(0 to 3) ;
+	signal chk,chk2: std_logic_vector(0 to 3) ;
+	signal c: std_logic;
+	signal s1,rs1: std_logic_vector(0 to 3) ;
+	signal cout,cout1,cout2,cout3:std_logic;
+BEGIN
+	stage0: fulladder port map(c,x1,y1,s,cout);
+	chk(1) <= cout;
+	chk(2) <= cout;
+	c<='0';
+	stage1: fulladder port map(c,s,chk,rs,cout1);
+	
+	
+	stage2: fulladder port map(cout,x2,y2,s1,cout2);
+	chk2(1) <= cout2;
+	chk2(2) <= cout2;
+	c<='0';
+	stage3: fulladder port map(c,s1,chk2,rs1,cout3);
+	overflow<=cout2;
+	stage4: hex port map(rs(0),rs(1),rs(2),rs(3),rs1(0),rs1(1),rs1(2),rs1(3),h(0),h(1),h(2),h(3),h(4),h(5),h(6),h2(0),h2(1),h2(2),h2(3),h2(4),h2(5),h2(6));
+END func;

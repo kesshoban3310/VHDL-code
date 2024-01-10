@@ -1,0 +1,22 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_arith.ALL;
+USE ieee.std_logic_signed.ALL;
+USE ieee.std_logic_unsigned.ALL;
+
+PACKAGE p7_package IS
+    COMPONENT hex
+        port(z,y,x,w : IN STD_LOGIC;
+			a,b,c,d,e,f,g     : OUT STD_LOGIC);
+    END COMPONENT hex;
+	 component reg
+		GENERIC (n: integer :=8); 
+		 PORT(clk : in std_logic;
+					clear: in std_logic;
+					load: in std_logic;
+					lr_sel: in std_logic;
+					di: in std_logic_vector(0 to n-1);
+					sdi: in std_logic;
+					output:BUFFER STD_LOGIC_VECTOR(0 to n-1));
+	end component reg;
+END p7_package;

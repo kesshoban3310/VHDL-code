@@ -1,0 +1,11 @@
+Library ieee;
+Use ieee.std_logic_1164.all;
+ENTITY project2 IS
+    port(cin,x,y:in std_logic;
+			cout,s:out std_logic);
+END project2;
+ 
+ARCHITECTURE  func OF project2 IS 
+BEGIN
+    
+END LogicFunc;

@@ -1,0 +1,11 @@
+Library ieee;
+Use ieee.std_logic_1164.all;
+Use work.p2_pack.all;
+ENTITY project2 IS
+    port(c,x,y:in std_logic_vector(0 to 7);
+			cout,s:out std_logic_vector(0 to 7));
+END project2;
+ARCHITECTURE  func OF p2 IS 
+BEGIN
+    stage 0: fulladd port map(c(0),x(0),y(0),s(0),c(1));
+END func;
