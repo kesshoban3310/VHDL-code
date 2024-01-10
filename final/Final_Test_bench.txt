@@ -1,0 +1,63 @@
+// nop : No Instruction
+// ★ : 在EXE偵測到Hazard需要做forward
+// 測資可能有爭議，畢竟每個人設計不盡相同，如有問題請一定要馬上連絡助教。
+
+基本款
+load r1 2
+load r2 3
+load r3 1
+add  r1 r2
+sub  r2 r3
+nop			Rs:5 Rt:3
+nop			Rs:2 Rt:1
+nop
+
+難一點
+load r0 3
+nop
+add  r0 r0
+nop
+move r1 r0	Rs:6 Rt:3 or Rs:6 Rt:6
+nop
+add  r1 r0
+nop
+nop			Rs:C Rt:6
+nop
+==== 以上做完就有50%不含報告，含報告則額再多20% ====
+
+========== 加分題 ============
+有Data Hazard(需要用Forward解決)
+load r1 1
+load r2 2
+add  r1 r1
+add  r2 r1
+add  r2 r1	 Rs:2 Rt:1 or Rs:2 Rt:2
+nop			★Rs:4 Rt:2
+nop			★Rs:8 Rt:4
+nop
+
+Lw, sw(加入操作記憶體MEM指令)
+load r0 2
+load r3 3
+load r1 1
+sw   r3 r0
+lw   r2 r0
+nop
+slt  r1 r2
+nop
+nop			Rs:1 Rt:3
+nop
+
+Div (需將Lab7的Code加入至本次pipeline cpu中做使用，必須在EXE stage做移位計算，不一定要8-bit)
+load r0 3
+load r1 1
+add  r0 r0
+load r2 2
+add  r0 r1
+nop
+div  r0 r2
+add  r1 r1
+add  r2 r2	★偵測到div在EXE stage，並在第18個clock顯示Rs:3 Rt:2
+nop			Rs:2 Rt:1 or Rs:2 Rt:2
+nop			Rs:4 Rt:2 or Rs:4 Rt:4
+nop
