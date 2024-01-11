@@ -17,7 +17,7 @@ ARCHITECTURE func OF final_project IS
 	TYPE regArray is array(0 to 3) OF STD_LOGIC_VECTOR(7 DOWNTO 0); -- register
 	TYPE pi_Array IS ARRAY(0 to 3) OF STD_LOGIC_VECTOR(0 to 31); -- instruction
 	signal reg: regArray;
-	signal pi_line: pi_Array;
+	signal pi_line: pi_Array :=(others => "11111111111111111111111111111111");
 	signal rs_data,rt_data:std_logic_vector(7 downto 0);
 	
 	
@@ -43,8 +43,8 @@ ARCHITECTURE func OF final_project IS
 
 
 -- output unit (at EXE stage)
-	signal data_ans:std_logic_vector(0 to 7);
-	signal rs_ans,rt_ans:std_logic_vector(0 to 7);
+	signal data_ans:std_logic_vector(0 to 7) :="00000000";
+	signal rs_ans,rt_ans:std_logic_vector(0 to 7):="00000000";
 	
 	
 -- forwarding unit (at EXE stage)
@@ -53,18 +53,35 @@ ARCHITECTURE func OF final_project IS
 	
 
 BEGIN 
-	process (clk) -- WB stage
+	process (clk) -- IF stage
 		Begin
 		if rising_edge(clk) then
-			pi_line(3) <= pi_line(2);
-			if( pi_line(3)(0 to 3) /="1111") then
-				rs_wb <= pi_line(3)(4 to 5);
-				rs_idx_wb <= to_integer(unsigned( rs_wb ));
-				rs_data_wb<= pi_line(3)(16 to 23);
-				reg(rs_idx_wb) <= rs_data_wb;
-				wb <= '1';
+			opcode <= IC;
+			data_v <= data;
+			pi_line(0) <= opcode & data_v & "00000000" & "00000000";
+			if(IC(0 to 3) /= "1111") then
+				in_fetch <= '1';
 			else
-				wb <= '0';
+				in_fetch <= '0';
+			END if;
+		END if;
+	end process;
+	
+	process (clk) --Instrcution Decode
+		Begin
+		if rising_edge(clk) then
+			pi_line(1) <= pi_line(0);
+			if(pi_line(1)(0 to 3 ) /= "1111") then
+				rs_id <= pi_line(1)(4 to 5);
+				rt_id <= pi_line(1)(6 to 7);
+				rs_idx_id <= to_integer(unsigned( rs_id ));
+				rt_idx_id <= to_integer(unsigned( rt_id ));
+				rs_data_id<= reg(rs_idx_id);
+				rt_data_id<= reg(rt_idx_id);
+				pi_line(1) <= pi_line(1)(0 to 15) & rs_data_id & rt_data_id;
+				in_decode <= '1';
+			else
+				in_decode <= '0';
 			END if;
 		END if;
 	end process;
@@ -73,7 +90,7 @@ BEGIN
 		Begin
 		if rising_edge(clk) then
 			pi_line(2) <= pi_line(1);
-			if(pi_line(2)(0 to 3 ) /="1111") then
+			if(pi_line(2)(0 to 3 ) /= "1111") then
 				rs_data_exe<= pi_line(2)(16 to 23);
 				rt_data_exe<= pi_line(2)(24 to 31);
 				data_exe<= pi_line(2)(8 to 15);
@@ -116,34 +133,24 @@ BEGIN
 		END if;
 	end process;
 	
-	process (clk) --Instrcution Decode
+	
+	process (clk) -- WB stage
 		Begin
 		if rising_edge(clk) then
-			pi_line(1) <= pi_line(0);
-			if(pi_line(1)(0 to 3 ) /="1111") then
-				rs_id <= pi_line(1)(4 to 5);
-				rt_id <= pi_line(1)(6 to 7);
-				rs_idx_id <= to_integer(unsigned( rs_id ));
-				rt_idx_id <= to_integer(unsigned( rt_id ));
-				rs_data_id<= reg(rs_idx_id);
-				rt_data_id<= reg(rt_idx_id);
-				pi_line(1) <= pi_line(1)(0 to 15) & rs_data_id & rt_data_id;
-				in_decode <= '1';
+			pi_line(3) <= pi_line(2);
+			if( pi_line(3)(0 to 3) /="1111") then
+				rs_wb <= pi_line(3)(4 to 5);
+				rs_idx_wb <= to_integer(unsigned( rs_wb ));
+				rs_data_wb<= pi_line(3)(16 to 23);
+				reg(rs_idx_wb) <= rs_data_wb;
+				wb <= '1';
 			else
-				in_decode <= '0';
+				wb <= '0';
 			END if;
 		END if;
 	end process;
 	
-	process (clk) -- IF stage
-		Begin
-		if rising_edge(clk) then
-			opcode <= IC;
-			data_v <= data;
-			pi_line(0) <= opcode & data_v & "00000000" & "00000000";
-			in_fetch <= '1';
-		END if;
-	end process;
+	
 	
 	
 	stage0: hex port map(data_ans(4 to 7),hex0);
