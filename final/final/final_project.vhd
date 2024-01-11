@@ -15,7 +15,7 @@ END final_project;
 
 ARCHITECTURE func OF final_project IS 
 	TYPE regArray is array(0 to 3) OF STD_LOGIC_VECTOR(7 DOWNTO 0); -- register
-	TYPE pi_Array IS ARRAY(0 to 4) OF STD_LOGIC_VECTOR(0 to 31); -- instruction
+	TYPE pi_Array IS ARRAY(0 to 3) OF STD_LOGIC_VECTOR(0 to 31); -- instruction
 	signal reg: regArray;
 	signal pi_line: pi_Array;
 	signal rs_data,rt_data:std_logic_vector(7 downto 0);
@@ -56,6 +56,7 @@ BEGIN
 	process (clk) -- WB stage
 		Begin
 		if rising_edge(clk) then
+			pi_line(3) <= pi_line(2);
 			if( pi_line(3)(0 to 3) /="1111") then
 				rs_wb <= pi_line(3)(4 to 5);
 				rs_idx_wb <= to_integer(unsigned( rs_wb ));
@@ -67,52 +68,58 @@ BEGIN
 			END if;
 		END if;
 	end process;
+	
 	process (clk) -- EXE stage
 		Begin
 		if rising_edge(clk) then
-				if(pi_line(2)(0 to 3 ) /="1111") then
-					rs_data_exe<= pi_line(2)(16 to 23);
-					rt_data_exe<= pi_line(2)(24 to 31);
-					data_exe<= pi_line(2)(8 to 15);
-					if(pi_line(2)(0 to 3 ) = "0000") then
-						rs_data_exe <=  data_exe;
-					END if;
-					if(pi_line(2)(0 to 3 ) = "0001") then
-						rs_data_exe <=  rt_data_exe;
-					END if;
-					if(pi_line(2)(0 to 3 ) = "0010") then
-						rs_data_exe <= rs_data_exe+rt_data_exe;
-					END if;
-					if(pi_line(2)(0 to 3 ) = "0011") then
-						rs_data_exe <= rs_data_exe-rt_data_exe;
-					END if;
-					if(pi_line(2)(0 to 3 ) = "0100") then
-						rs_data_exe <= rs_data_exe and rt_data_exe;
-					END if;
-					if(pi_line(2)(0 to 3 ) = "0101") then
-						rs_data_exe <= rs_data_exe or rt_data_exe;
-					END if;
-					if(pi_line(2)(0 to 3 ) = "0110") then
-						rs_data_exe <= rs_data_exe nor rt_data_exe;
-					END if;
-					if(pi_line(2)(0 to 3 ) = "0111") then
-						if(rs_data_exe < rt_data_exe) then
-							rs_data_exe <= "00000001";
-						else
-							rs_data_exe <= "00000000";
-						END if;
-					END if;
-					exe <= '1';
-					pi_line(2) <= pi_line(2)(0 to 7) & pi_line(2)(8 to 15) & rs_data_exe & rt_data_exe;
-				else
-					exe <= '0';
+			pi_line(2) <= pi_line(1);
+			if(pi_line(2)(0 to 3 ) /="1111") then
+				rs_data_exe<= pi_line(2)(16 to 23);
+				rt_data_exe<= pi_line(2)(24 to 31);
+				data_exe<= pi_line(2)(8 to 15);
+				if(pi_line(2)(0 to 3 ) = "0000") then
+					rs_data_exe <=  data_exe;
 				END if;
+				if(pi_line(2)(0 to 3 ) = "0001") then
+					rs_data_exe <=  rt_data_exe;
+				END if;
+				if(pi_line(2)(0 to 3 ) = "0010") then
+					rs_data_exe <= rs_data_exe+rt_data_exe;
+				END if;
+				if(pi_line(2)(0 to 3 ) = "0011") then
+					rs_data_exe <= rs_data_exe-rt_data_exe;
+				END if;
+				if(pi_line(2)(0 to 3 ) = "0100") then
+					rs_data_exe <= rs_data_exe and rt_data_exe;
+				END if;
+				if(pi_line(2)(0 to 3 ) = "0101") then
+					rs_data_exe <= rs_data_exe or rt_data_exe;
+				END if;
+				if(pi_line(2)(0 to 3 ) = "0110") then
+					rs_data_exe <= rs_data_exe nor rt_data_exe;
+				END if;
+				if(pi_line(2)(0 to 3 ) = "0111") then
+					if(rs_data_exe < rt_data_exe) then
+						rs_data_exe <= "00000001";
+					else
+						rs_data_exe <= "00000000";
+					END if;
+				END if;
+				exe <= '1';
+				pi_line(2) <= pi_line(2)(0 to 7) & pi_line(2)(8 to 15) & rs_data_exe & rt_data_exe;
+				rs_ans <= rs_data_exe;
+				rt_ans <= rt_data_exe;
+				data_ans <= pi_line(2)(8 to 15);
+			else
+				exe <= '0';
+			END if;
 		END if;
 	end process;
+	
 	process (clk) --Instrcution Decode
 		Begin
 		if rising_edge(clk) then
-			
+			pi_line(1) <= pi_line(0);
 			if(pi_line(1)(0 to 3 ) /="1111") then
 				rs_id <= pi_line(1)(4 to 5);
 				rt_id <= pi_line(1)(6 to 7);
