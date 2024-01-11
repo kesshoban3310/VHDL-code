@@ -116,4 +116,23 @@ set_location_assignment PIN_AH19 -to hex5[3]
 set_location_assignment PIN_AG19 -to hex5[4]
 set_location_assignment PIN_AF18 -to hex5[5]
 set_location_assignment PIN_AH18 -to hex5[6]
+set_location_assignment PIN_AA17 -to hex6[0]
+set_location_assignment PIN_AB16 -to hex6[1]
+set_location_assignment PIN_AA16 -to hex6[2]
+set_location_assignment PIN_AB17 -to hex6[3]
+set_location_assignment PIN_AB15 -to hex6[4]
+set_location_assignment PIN_AA15 -to hex6[5]
+set_location_assignment PIN_AC17 -to hex6[6]
+set_location_assignment PIN_AD17 -to hex7[0]
+set_location_assignment PIN_AE17 -to hex7[1]
+set_location_assignment PIN_AG17 -to hex7[2]
+set_location_assignment PIN_AH17 -to hex7[3]
+set_location_assignment PIN_AF17 -to hex7[4]
+set_location_assignment PIN_AG18 -to hex7[5]
+set_location_assignment PIN_AA14 -to hex7[6]
+set_location_assignment PIN_Y23 -to test[0]
+set_location_assignment PIN_Y24 -to test[1]
+set_global_assignment -name VHDL_FILE output_files/debounce.vhd
+set_location_assignment PIN_AG14 -to btn
+set_global_assignment -name VHDL_FILE debounce.vhd
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -9,9 +9,4 @@ PACKAGE final_package IS
 			hex_out: OUT STD_LOGIC_VECTOR(0 to 6)
 			);
     END COMPONENT hex;
-	 component debounce
-		PORT (clock : IN STD_LOGIC;
-			  btn : IN STD_LOGIC;
-			  btn_debounce : OUT STD_LOGIC);
-	end component debounce;
 END final_package;
