@@ -125,8 +125,8 @@ BEGIN
 				END if;
 				
 				pi_line(2) <= pi_line(1)(31 downto 24) & pi_line(1)(23 downto 16) & rs_data_exe & rt_data_exe;
-				rs_ans <= rs_data_exe;
-				rt_ans <= rt_data_exe;
+--				rs_ans <= rs_data_exe;
+--				rt_ans <= rt_data_exe;
 				data_ans <= pi_line(1)(23 downto 16);
 				exe <= '1';
 			else
@@ -135,45 +135,49 @@ BEGIN
 				data_ans <= "00000000";
 				exe <= '0';
 			END if;
-			
+			pi_line(2) <= pi_line(1)(31 downto 24) & pi_line(1)(23 downto 16) & rs_data_exe & rt_data_exe;
 		END if;
 	end process;
 --	
 --	
-	process (btn_clk) -- WB stage
-		Begin
-		if rising_edge(btn_clk) then
-			pi_line(3) <= pi_line(2);
-			
-			if( pi_line(2)(31 downto 28) /="1111") then
-				rs_wb <= pi_line(2)(27 downto 26);
-				rs_idx_wb <= to_integer(unsigned( rs_wb ));
-				rs_data_wb<= pi_line(2)(15 downto 8);
-				reg(rs_idx_wb) <= rs_data_wb;
-				wb <= '1';
-			else
-				wb <= '0';
-			END if;
-		END if;
-	end process;
+--	process (btn_clk) -- WB stage
+--		Begin
+--		if rising_edge(btn_clk) then
+--			pi_line(3) <= pi_line(2);
+--			
+--			if( pi_line(2)(31 downto 28) /="1111") then
+--				rs_wb <= pi_line(2)(27 downto 26);
+--				rs_idx_wb <= to_integer(unsigned( rs_wb ));
+--				rs_data_wb<= pi_line(2)(15 downto 8);
+--				reg(rs_idx_wb) <= rs_data_wb;
+--				
+--				rs_ans <= rs_data_exe;
+--				rt_ans <= rt_data_exe;
+--				data_ans <= pi_line(2)(23 downto 16);
+--				wb <= '1';
+--			else
+--				wb <= '0';
+--			END if;
+--		END if;
+--	end process;
 	
 	
 	test_id <= to_integer(unsigned( test ));
 	test_dt <= reg(test_id);
 	
 
-	stage0: hex port map(data(0) & data(1) & data(2) & data(3),hex0);
-	stage1: hex port map(data(4) & data(5) & data(6) & data(7),hex1);
-	stage2: hex port map(rs_ans(0) & rs_ans(1) & rs_ans(2) & rs_ans(3),hex2);
-	stage3: hex port map(rs_ans(4) & rs_ans(5) & rs_ans(6) & rs_ans(7),hex3);
+--	stage0: hex port map(data(0) & data(1) & data(2) & data(3),hex0);
+--	stage1: hex port map(data(4) & data(5) & data(6) & data(7),hex1);
+	stage2: hex port map(rs_data_exe(0) & rs_data_exe(1) & rs_data_exe(2) & rs_data_exe(3),hex2);
+	stage3: hex port map(rs_data_exe(4) & rs_data_exe(5) & rs_data_exe(6) & rs_data_exe(7),hex3);
 	stage4: hex port map(rt_ans(0) & rt_ans(1) & rt_ans(2) & rt_ans(3),hex4);
 	stage5: hex port map(rt_ans(4) & rt_ans(5) & rt_ans(6) & rt_ans(7),hex5);
 	
-	stage6: hex port map(data_ans(0) & data_ans(1) & data_ans(2) & data_ans(3), hex6);
-	stage7: hex port map(data_ans(4) & data_ans(5) & data_ans(6) & data_ans(7), hex7);
+	stage8: hex port map(data_ans(0) & data_ans(1) & data_ans(2) & data_ans(3), hex0);
+	stage9: hex port map(data_ans(4) & data_ans(5) & data_ans(6) & data_ans(7), hex1);
 	
 	
---	stage6: hex port map(test_dt(0) & test_dt(1) & test_dt(2) & test_dt(3), hex6);
---	stage7: hex port map(test_dt(4) & test_dt(5) & test_dt(6) & test_dt(7), hex7);
+	stage6: hex port map(test_dt(0) & test_dt(1) & test_dt(2) & test_dt(3), hex6);
+	stage7: hex port map(test_dt(4) & test_dt(5) & test_dt(6) & test_dt(7), hex7);
 	 
 END func;
