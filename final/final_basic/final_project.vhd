@@ -76,16 +76,9 @@ BEGIN
 			pi_line(1) <= pi_line(0);
 			
 			if(pi_line(0)(31 downto 28) /= "1111") then
-				rs_id <= pi_line(0)(27 downto 26);
-				rt_id <= pi_line(0)(25 downto 24);
-				rs_idx_id <= to_integer(unsigned( rs_id ));
-				rt_idx_id <= to_integer(unsigned( rt_id ));
-				rs_data_id<= reg(rs_idx_id);
-				rt_data_id<= reg(rt_idx_id);
-				pi_line(1) <= pi_line(0)(31 downto 16) & rs_data_id & rt_data_id;
---				rs_ans <= rs_data_id;
---				rt_ans <= rt_data_id;
---				data_ans <= pi_line(0)(23 downto 16);
+--				reg(to_integer(unsigned( pi_line(1)(27 downto 26) )))
+--				reg(to_integer(unsigned( pi_line(1)(25 downto 24) )))
+				pi_line(1) <= pi_line(0)(31 downto 16) & "00000000" & "00000000";
 				in_decode <= '1';
 			else
 				in_decode <= '0';
@@ -97,84 +90,94 @@ BEGIN
 		Begin
 		if rising_edge(btn_clk) then
 			pi_line(2) <= pi_line(1);
-			
+
 			if(pi_line(1)(31 downto 28) /= "1111") then
 				rs_data_exe<= pi_line(1)(15 downto 8);
 				rt_data_exe<= pi_line(1)(7 downto 0);
 				data_exe<= pi_line(1)(23 downto 16);
+				
 				if(pi_line(1)(31 downto 28) = "0000") then
-					rs_data_exe <=  data_exe;
+				
+					pi_line(2)(15 downto 8) <=  pi_line(1)(23 downto 16);
+					
 				elsif(pi_line(1)(31 downto 28) = "0001") then
-					rs_data_exe <=  rt_data_exe;
+				
+					pi_line(2)(15 downto 8) <=  reg(to_integer(unsigned( pi_line(1)(25 downto 24) )));
+					
 				elsif(pi_line(1)(31 downto 28) = "0010") then
-					rs_data_exe <= rs_data_exe+rt_data_exe;
+				
+					pi_line(2)(15 downto 8) <= reg(to_integer(unsigned( pi_line(1)(27 downto 26) ))) + reg(to_integer(unsigned( pi_line(1)(25 downto 24) )));
+					
 				elsif(pi_line(1)(31 downto 28) = "0011") then
-					rs_data_exe <= rs_data_exe-rt_data_exe;
+				
+					pi_line(2)(15 downto 8) <= reg(to_integer(unsigned( pi_line(1)(27 downto 26) ))) - reg(to_integer(unsigned( pi_line(1)(25 downto 24) )));
+					
 				elsif(pi_line(1)(31 downto 28) = "0100") then
-					rs_data_exe <= rs_data_exe and rt_data_exe;
+				
+					pi_line(2)(15 downto 8) <= reg(to_integer(unsigned( pi_line(1)(27 downto 26) ))) and reg(to_integer(unsigned( pi_line(1)(25 downto 24) )));
+					
 				elsif(pi_line(1)(31 downto 28) = "0101") then
-					rs_data_exe <= rs_data_exe or rt_data_exe;
+				
+					pi_line(2)(15 downto 8) <= reg(to_integer(unsigned( pi_line(1)(27 downto 26) ))) or reg(to_integer(unsigned( pi_line(1)(25 downto 24) )));
+					
 				elsif(pi_line(1)(31 downto 28) = "0110") then
-					rs_data_exe <= rs_data_exe nor rt_data_exe;
+				
+					pi_line(2)(15 downto 8) <= reg(to_integer(unsigned( pi_line(1)(27 downto 26) ))) nor reg(to_integer(unsigned( pi_line(1)(25 downto 24) )));
+					
 				elsif(pi_line(1)(31 downto 28) = "0111") then
-					if(rs_data_exe < rt_data_exe) then
-						rs_data_exe <= "00000001";
+					if(reg(to_integer(unsigned( pi_line(1)(27 downto 26) ))) < reg(to_integer(unsigned( pi_line(1)(25 downto 24) )))) then
+						pi_line(2)(15 downto 8) <= "00000001";
 					else
-						rs_data_exe <= "00000000";
+						pi_line(2)(15 downto 8) <= "00000000";
 					END if;
 				END if;
 				
-				pi_line(2) <= pi_line(1)(31 downto 24) & pi_line(1)(23 downto 16) & rs_data_exe & rt_data_exe;
---				rs_ans <= rs_data_exe;
---				rt_ans <= rt_data_exe;
-				data_ans <= pi_line(1)(23 downto 16);
+				pi_line(2)(31 downto 16) <= pi_line(1)(31 downto 16);
 				exe <= '1';
 			else
-				rs_ans <= "00000000";
-				rt_ans <= "00000000";
-				data_ans <= "00000000";
+
 				exe <= '0';
 			END if;
-			pi_line(2) <= pi_line(1)(31 downto 24) & pi_line(1)(23 downto 16) & rs_data_exe & rt_data_exe;
 		END if;
 	end process;
 --	
 --	
---	process (btn_clk) -- WB stage
---		Begin
---		if rising_edge(btn_clk) then
---			pi_line(3) <= pi_line(2);
---			
---			if( pi_line(2)(31 downto 28) /="1111") then
+	process (btn_clk) -- WB stage
+		Begin
+		if rising_edge(btn_clk) then
+			pi_line(3) <= pi_line(2);
+			
+			if( pi_line(2)(31 downto 28) /="1111") then
 --				rs_wb <= pi_line(2)(27 downto 26);
---				rs_idx_wb <= to_integer(unsigned( rs_wb ));
+--				rs_idx_wb <= to_integer(unsigned( pi_line(2)(27 downto 26) ));
 --				rs_data_wb<= pi_line(2)(15 downto 8);
---				reg(rs_idx_wb) <= rs_data_wb;
---				
---				rs_ans <= rs_data_exe;
---				rt_ans <= rt_data_exe;
---				data_ans <= pi_line(2)(23 downto 16);
---				wb <= '1';
---			else
---				wb <= '0';
---			END if;
---		END if;
---	end process;
+				reg(to_integer(unsigned( pi_line(2)(27 downto 26) ))) <= pi_line(2)(15 downto 8);
+				wb <= '1';
+			else
+				wb <= '0';
+			END if;
+		END if;
+	end process;
 	
 	
 	test_id <= to_integer(unsigned( test ));
 	test_dt <= reg(test_id);
 	
-
+-- 31~24 opcode
+--	23~16 data
+--	15~8 rs_data
+--	7~0 rt_data
+	
 --	stage0: hex port map(data(0) & data(1) & data(2) & data(3),hex0);
 --	stage1: hex port map(data(4) & data(5) & data(6) & data(7),hex1);
-	stage2: hex port map(rs_data_exe(0) & rs_data_exe(1) & rs_data_exe(2) & rs_data_exe(3),hex2);
-	stage3: hex port map(rs_data_exe(4) & rs_data_exe(5) & rs_data_exe(6) & rs_data_exe(7),hex3);
-	stage4: hex port map(rt_ans(0) & rt_ans(1) & rt_ans(2) & rt_ans(3),hex4);
-	stage5: hex port map(rt_ans(4) & rt_ans(5) & rt_ans(6) & rt_ans(7),hex5);
+	stage2: hex port map(pi_line(2)(8) & pi_line(2)(9) & pi_line(2)(10) & pi_line(2)(11),hex2);
+	stage3: hex port map(pi_line(2)(12) & pi_line(2)(13) & pi_line(2)(14) & pi_line(2)(15),hex3);
 	
-	stage8: hex port map(data_ans(0) & data_ans(1) & data_ans(2) & data_ans(3), hex0);
-	stage9: hex port map(data_ans(4) & data_ans(5) & data_ans(6) & data_ans(7), hex1);
+	stage4: hex port map(pi_line(2)(0) & pi_line(2)(1) & pi_line(2)(2) & pi_line(2)(3),hex4);
+	stage5: hex port map(pi_line(2)(4) & pi_line(2)(5) & pi_line(2)(6) & pi_line(2)(7),hex5);
+	
+	stage8: hex port map(reg(to_integer(unsigned( pi_line(2)(25 downto 24) )))(0) & reg(to_integer(unsigned( pi_line(2)(25 downto 24) )))(1) & reg(to_integer(unsigned( pi_line(2)(25 downto 24) )))(2) & reg(to_integer(unsigned( pi_line(2)(25 downto 24) )))(3), hex0);
+	stage9: hex port map(reg(to_integer(unsigned( pi_line(2)(25 downto 24) )))(4) & reg(to_integer(unsigned( pi_line(2)(25 downto 24) )))(5) & reg(to_integer(unsigned( pi_line(2)(25 downto 24) )))(6) & reg(to_integer(unsigned( pi_line(2)(25 downto 24) )))(7), hex1);
 	
 	
 	stage6: hex port map(test_dt(0) & test_dt(1) & test_dt(2) & test_dt(3), hex6);
