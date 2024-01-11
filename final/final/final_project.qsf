@@ -53,14 +53,14 @@ set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_RO
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name VHDL_FILE final_package.vhd
 set_location_assignment PIN_M23 -to clk
-set_location_assignment PIN_AA22 -to IC[0]
-set_location_assignment PIN_AA23 -to IC[1]
-set_location_assignment PIN_AA24 -to IC[2]
-set_location_assignment PIN_AB23 -to IC[3]
-set_location_assignment PIN_AB24 -to IC[4]
-set_location_assignment PIN_AC24 -to IC[5]
-set_location_assignment PIN_AB25 -to IC[6]
-set_location_assignment PIN_AC25 -to IC[7]
+set_location_assignment PIN_AC25 -to IC[0]
+set_location_assignment PIN_AB25 -to IC[1]
+set_location_assignment PIN_AC24 -to IC[2]
+set_location_assignment PIN_AB24 -to IC[3]
+set_location_assignment PIN_AB23 -to IC[4]
+set_location_assignment PIN_AA24 -to IC[5]
+set_location_assignment PIN_AA23 -to IC[6]
+set_location_assignment PIN_AA22 -to IC[7]
 set_location_assignment PIN_AB26 -to data[7]
 set_location_assignment PIN_AD26 -to data[6]
 set_location_assignment PIN_AC26 -to data[5]
@@ -133,6 +133,6 @@ set_location_assignment PIN_AA14 -to hex7[6]
 set_location_assignment PIN_Y23 -to test[0]
 set_location_assignment PIN_Y24 -to test[1]
 set_global_assignment -name VHDL_FILE output_files/debounce.vhd
-set_location_assignment PIN_AG14 -to btn
+set_location_assignment PIN_Y2 -to btn
 set_global_assignment -name VHDL_FILE debounce.vhd
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
