@@ -2,7 +2,6 @@ Library ieee;
 Use ieee.std_logic_1164.all;
 Use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
---USE ieee.std_logic_arith.ALL;
 use work.final_package.all;
 ENTITY final_project IS
     PORT(
@@ -14,130 +13,130 @@ ENTITY final_project IS
 	 );
 END final_project;
 
-ARCHITECTURE  func OF final_project IS 
-	TYPE regArray IS ARRAY (NATURAL RANGE <>) OF STD_LOGIC_VECTOR(7 DOWNTO 0); -- register
-	TYPE pi_Array IS ARRAY (NATURAL RANGE <>) OF STD_LOGIC_VECTOR(0 to 31); -- instruction
-	signal reg:regArray(0 to 3);
-	signal opcode: std_logic_vector(0 to 7);
-	signal rs_idx,rt_idx:integer range 0 to 15;
-	signal pi_line: pi_array (0 to 3);
-	signal rs,rt:std_logic_vector(0 to 1);
+ARCHITECTURE func OF final_project IS 
+	TYPE regArray is array(0 to 3) OF STD_LOGIC_VECTOR(7 DOWNTO 0); -- register
+	TYPE pi_Array IS ARRAY(0 to 4) OF STD_LOGIC_VECTOR(0 to 31); -- instruction
+	signal reg: regArray;
+	signal pi_line: pi_Array;
 	signal rs_data,rt_data:std_logic_vector(7 downto 0);
-	signal data_v:std_logic_vector(7 downto 0);
--- output unit
+	
+	
+	
+-- IF unit
+	signal opcode: std_logic_vector(0 to 7);
+	signal data_v: std_logic_vector(7 downto 0);
+
+-- ID unit
+	signal rs_idx_id,rt_idx_id:integer range 0 to 15;
+	signal rs_data_id,rt_data_id:std_logic_vector(7 downto 0);
+	signal rs_id,rt_id:std_logic_vector(0 to 1);
+-- EXE unit
+	signal rs_idx_exe,rt_idx_exe:integer range 0 to 15;
+	signal rs_data_exe,rt_data_exe:std_logic_vector(7 downto 0);
+	signal rs_exe,rt_exe:std_logic_vector(0 to 1);
+	signal data_exe:std_logic_vector(7 downto 0);
+-- WB unit	
+	signal rs_idx_wb,rt_idx_wb:integer range 0 to 15;
+	signal rs_data_wb,rt_data_wb:std_logic_vector(7 downto 0);
+	signal rs_wb,rt_wb:std_logic_vector(0 to 1);
+	signal data_wb:std_logic_vector(7 downto 0);
+
+
+-- output unit (at EXE stage)
 	signal data_ans:std_logic_vector(0 to 7);
 	signal rs_ans,rt_ans:std_logic_vector(0 to 7);
 	
 	
--- forwarding unit	
+-- forwarding unit (at EXE stage)
 	signal for_rs,for_rt: std_logic_vector(0 to 1);
 	signal for_rs_da,for_rt_da: std_logic_vector(7 downto 0);	
 	
---	signal forwarding_data:std_logic_vector(7 DOWNTO 0);
---	signal 
---	signal
-	
-BEGIN 
 
-	process --program
+BEGIN 
+	process (clk) -- WB stage
 		Begin
-		WAIT UNTIL clk'EVENT and clk = '1';
-		
-		for_rs <= pi_line(3)(4 to 5);
-		for_rt <= pi_line(3)(6 to 7);
-		
-		for_rs_da <= pi_line(3)(16 to 23);
-		for_rt_da <= pi_line(3)(24 to 31);
-		
-		stage1: for i in 3 to 0 loop
-			if i = 3 then --write back
-				opcode <= pi_line(3)(0 to 7);
-				if(opcode(0 to 3 ) /="1111") then
-					data_v <= pi_line(3)(8 to 15);
-					rs <= opcode(4) & opcode(5);
-					rs_idx <= to_integer(unsigned( rs ));
-					rs_data<= pi_line(3)(16 to 23);
-					reg(rs_idx) <= rs_data;
-					rs_ans <= rs_data;
-					rt_ans <= pi_line(3)(24 to 31);
-					data_ans <= data_v;
-					wb <= '1';
-				else
-					wb <= '0';
-				END if;
-				
+		if rising_edge(clk) then
+			if( pi_line(3)(0 to 3) /="1111") then
+				rs_wb <= pi_line(3)(4 to 5);
+				rs_idx_wb <= to_integer(unsigned( rs_wb ));
+				rs_data_wb<= pi_line(3)(16 to 23);
+				reg(rs_idx_wb) <= rs_data_wb;
+				wb <= '1';
+			else
+				wb <= '0';
 			END if;
-			if i = 2 then --execution
-				opcode <= pi_line(2)(0 to 7);
-				data_v <= pi_line(2)(8 to 15);
-				if(opcode(0 to 3 ) /="1111") then
-					rs_data<= pi_line(2)(16 to 23);
-					rt_data<= pi_line(2)(24 to 31);
-					if(opcode(0 to 3 ) = "0000") then
-						rs_data <=  data_v;
+		END if;
+	end process;
+	process (clk) -- EXE stage
+		Begin
+		if rising_edge(clk) then
+				if(pi_line(2)(0 to 3 ) /="1111") then
+					rs_data_exe<= pi_line(2)(16 to 23);
+					rt_data_exe<= pi_line(2)(24 to 31);
+					data_exe<= pi_line(2)(8 to 15);
+					if(pi_line(2)(0 to 3 ) = "0000") then
+						rs_data_exe <=  data_exe;
 					END if;
-					if(opcode(0 to 3 ) = "0001") then
-						rs_data <=  rt_data;
+					if(pi_line(2)(0 to 3 ) = "0001") then
+						rs_data_exe <=  rt_data_exe;
 					END if;
-					if(opcode(0 to 3 ) = "0010") then
-						rs_data <= rs_data+rt_data;
+					if(pi_line(2)(0 to 3 ) = "0010") then
+						rs_data_exe <= rs_data_exe+rt_data_exe;
 					END if;
-					if(opcode(0 to 3 ) = "0011") then
-						rs_data <= rs_data-rt_data;
+					if(pi_line(2)(0 to 3 ) = "0011") then
+						rs_data_exe <= rs_data_exe-rt_data_exe;
 					END if;
-					if(opcode(0 to 3 ) = "0100") then
-						rs_data <= rs_data and rt_data;
+					if(pi_line(2)(0 to 3 ) = "0100") then
+						rs_data_exe <= rs_data_exe and rt_data_exe;
 					END if;
-					if(opcode(0 to 3 ) = "0101") then
-						rs_data <= rs_data or rt_data;
+					if(pi_line(2)(0 to 3 ) = "0101") then
+						rs_data_exe <= rs_data_exe or rt_data_exe;
 					END if;
-					if(opcode(0 to 3 ) = "0110") then
-						rs_data <= rs_data nor rt_data;
+					if(pi_line(2)(0 to 3 ) = "0110") then
+						rs_data_exe <= rs_data_exe nor rt_data_exe;
 					END if;
-					if(opcode(0 to 3 ) = "0111") then
-						if(rs_data < rt_data) then
-							rs_data <= "00000001";
+					if(pi_line(2)(0 to 3 ) = "0111") then
+						if(rs_data_exe < rt_data_exe) then
+							rs_data_exe <= "00000001";
 						else
-							rs_data <= "00000000";
+							rs_data_exe <= "00000000";
 						END if;
 					END if;
 					exe <= '1';
+					pi_line(2) <= pi_line(2)(0 to 7) & pi_line(2)(8 to 15) & rs_data_exe & rt_data_exe;
 				else
 					exe <= '0';
 				END if;
-				
+		END if;
+	end process;
+	process (clk) --Instrcution Decode
+		Begin
+		if rising_edge(clk) then
+			
+			if(pi_line(1)(0 to 3 ) /="1111") then
+				rs_id <= pi_line(1)(4 to 5);
+				rt_id <= pi_line(1)(6 to 7);
+				rs_idx_id <= to_integer(unsigned( rs_id ));
+				rt_idx_id <= to_integer(unsigned( rt_id ));
+				rs_data_id<= reg(rs_idx_id);
+				rt_data_id<= reg(rt_idx_id);
+				pi_line(1) <= pi_line(1)(0 to 15) & rs_data_id & rt_data_id;
+				in_decode <= '1';
+			else
+				in_decode <= '0';
 			END if;
-			if i = 1 then --Instrcution Decode
-				opcode <= pi_line(1)(0 to 7);
-				if(opcode(0 to 3 ) /="1111") then
-					data_v <= pi_line(1)(8 to 15);
-					rs <= opcode(4) & opcode(5);
-					rt <= opcode(6) & opcode(7);
-					rs_idx <= to_integer(unsigned( rs ));
-					rt_idx <= to_integer(unsigned( rt ));
-					rs_data<= reg(rs_idx);
-					rt_data<= reg(rt_idx);
-					pi_line(1) <= opcode & data_v & rs_data & rt_data;
-					in_decode <= '1';
-				else
-					in_decode <= '0';
-				END if;
-			END if; 
-			if i = 0 then -- Instrcution Fetch
-				pi_line(0) <= IC & data & "00000000" & "00000000";
-				in_fetch <= '1';
-			END if;
-		END loop;
+		END if;
 	end process;
 	
-	process  --pipeline move
+	process (clk) -- IF stage
 		Begin
-			WAIT UNTIL clk'EVENT and clk = '1';
-			stage2: for i in 2 to 0 loop
-				pi_line(i+1) <= pi_line(i);
-			END loop;
-			pi_line(0) <= "11111111111111111111111111111111";
-	end process;	
+		if rising_edge(clk) then
+			opcode <= IC;
+			data_v <= data;
+			pi_line(0) <= opcode & data_v & "00000000" & "00000000";
+			in_fetch <= '1';
+		END if;
+	end process;
 	
 	
 	stage0: hex port map(data_ans(4 to 7),hex0);
